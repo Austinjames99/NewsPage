@@ -23,18 +23,19 @@ export default function CreatePost() {
     const [summary, setSummary] = useState('')
     const [content, setContent] = useState('')
     const [files, setFiles] = useState('')
-    function createNewPost(ev){
+    async function createNewPost(ev){
         const data = new FormData()
         data.set('title', title)
         data.set('summary', summary)
         data.set('content',content)
         data.set('file', files[0] )//picks first file
-       ev.preventDefault()
+       const response = await ev.preventDefault()
        fetch('http://localhost:4000/post', {
         method: "POST",
         body: data,  
 
        }) 
+       await response.json()
     }
  
     return (

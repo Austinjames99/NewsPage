@@ -7,7 +7,8 @@ const app = express()
 const jwt = require('jsonwebtoken')
 const cookieParser = require('cookie-parser')
 const multer = require('multer') // used to upload files
-const uploadMiddle = multer({ dest: 'uploads/ '})
+const uploadMiddleware = multer({ dest: 'models/uploads '})
+const fs = require('fs')
 
 const salt = bcrypt.genSaltSync(10)//needed to make bcrypt work
 const secret = "hdfhsdhfjasdhjfsdahfsdhdf"
@@ -64,9 +65,16 @@ app.post('/logout', (req,res) => {
     })
 })
 
-app.post('/post', (req,res => {
+app.post('/post', uploadMiddleware.single('file'), (req,res) => {
+    const {originalname,path} = req.file
+    const parts = originalname.split('.')
+    const ext = parts[parts.length - 1]
+    const newPath = path+'.'+ext
+    fs.renameSync(path, newPath)
+    res.json({ext})
 
-}))
+
+})
 app.listen(4000)
 
 //eM9QFIHWyEz2Wrtu --- mongo password - delete later - aj
