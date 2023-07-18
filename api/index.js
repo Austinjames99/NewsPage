@@ -6,6 +6,8 @@ const bcrypt = require('bcryptjs') //password encryption
 const app = express()
 const jwt = require('jsonwebtoken')
 const cookieParser = require('cookie-parser')
+const multer = require('multer') // used to upload files
+const uploadMiddle = multer({ dest: 'uploads/ '})
 
 const salt = bcrypt.genSaltSync(10)//needed to make bcrypt work
 const secret = "hdfhsdhfjasdhjfsdahfsdhdf"
@@ -54,13 +56,17 @@ app.get('/profile', (req,res) => {
         res.json(info)
     })
 })
-
+//logout endpoint
 app.post('/logout', (req,res) => {
     res.cookie('token', '').json({
         id:userDoc._id,
         username,
     })
 })
+
+app.post('/post', (req,res => {
+
+}))
 app.listen(4000)
 
 //eM9QFIHWyEz2Wrtu --- mongo password - delete later - aj
