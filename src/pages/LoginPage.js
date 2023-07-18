@@ -1,5 +1,6 @@
-import {useState} from 'react' 
+import {useContext, useState} from 'react' 
 import { Await, Navigate } from 'react-router-dom'
+import {UserContext} from '../userContext'
 
 
 
@@ -7,6 +8,7 @@ export default function LoginPage () {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [redirect, setRedirect] = useState(false) //default is false
+    const {setUserInfo} = useContext(UserContext)
     async function login(ev){
         ev.preventDefault()
         const response = await fetch('http://localhost:4000/login', {
@@ -16,7 +18,11 @@ export default function LoginPage () {
             credentials: 'include', //includes cookie
         })
         if (response.ok){
+          response.json().then(userInfo => {
+            setUserInfo(userInfo)
             setRedirect(true)
+          })
+           
         } else {
             alert('Wrong Username or Password')
         }
