@@ -5,12 +5,14 @@ const User = require('./models/user')
 const bcrypt = require('bcryptjs') //password encryption
 const app = express()
 const jwt = require('jsonwebtoken')
+const cookieParser = require('cookie-parser')
 
 const salt = bcrypt.genSaltSync(10)//needed to make bcrypt work
 const secret = "hdfhsdhfjasdhjfsdahfsdhdf"
 
 app.use(cors({credentials:true, origin:'http://localhost:3000'}))
 app.use(express.json())
+app.use(cookieParser())
 
 mongoose.connect('mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority')
 
@@ -23,7 +25,7 @@ app.post('/register', async (req,res) => {
         })
         res.json(userDoc)
     }   catch(e) {
-        console.log(e) //test console.log ----delete later -aj
+        console.log(e) //test console.log errors ----delete later -aj
         res.status(400).json(e) //Error handling if user is not unique
     }
      
@@ -44,9 +46,17 @@ app.post('/login', async (req, res) => {
     }
 })
 
+ //endpoint for profile (checking if logged in)
+app.get('/profile', (req,res) => { 
+    const {token} = req.cookies
+    jwt.verify(token, secret, {}, (err,info) => {
+        if (err) throw err
+        res.json(info)
+    })
+})
 
-app.get('/profile', (req,res) => {  //endpoint for profile (checking if logged in)
-    res.json(req.cookies)
+app.post('/logout', (req,res) => {
+    res.cookie('token', '').json('ok')
 })
 app.listen(4000)
 
