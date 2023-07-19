@@ -2,13 +2,14 @@ const express = require('express')
 const cors = require('cors') //used for error with network sending credentials
 const mongoose = require('mongoose')
 const User = require('./models/user')
+const Post = require('./models/Post')
 const bcrypt = require('bcryptjs') //password encryption
 const app = express()
 const jwt = require('jsonwebtoken')
 const cookieParser = require('cookie-parser')
 const multer = require('multer') // used to upload files
 const uploadMiddleware = multer({ dest: 'models/uploads '})
-const fs = require('fs')
+const fs = require('fs') //filesytem access 
 
 const salt = bcrypt.genSaltSync(10)//needed to make bcrypt work
 const secret = "hdfhsdhfjasdhjfsdahfsdhdf"
@@ -64,14 +65,27 @@ app.post('/logout', (req,res) => {
         username,
     })
 })
-
-app.post('/post', uploadMiddleware.single('file'), (req,res) => {
+//endpoint for file uploads, code for renaming files
+app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
     const {originalname,path} = req.file
     const parts = originalname.split('.')
     const ext = parts[parts.length - 1]
     const newPath = path+'.'+ext
     fs.renameSync(path, newPath)
-    res.json({ext})
+    
+    const {title,summary,content} = req.body
+    const postDoc = await Post.create({
+        title,
+        summary,
+        content,
+        cover:newPath,
+
+
+    })
+
+
+
+    res.json({postDoc})
 
 
 })
