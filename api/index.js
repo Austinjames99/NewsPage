@@ -89,6 +89,10 @@ app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
 
 
 })
+
+app.get('/post', async (req,res) =>{
+    res.json(await Post.find())
+})
 app.listen(4000)
 
 //eM9QFIHWyEz2Wrtu --- mongo password - delete later - aj
