@@ -1,5 +1,5 @@
 import {formatISO9075} from 'date-fns' //used to make date look good/same as database
-export default function Post({title,summary,cover,content,createdAt}) {
+export default function Post({title,summary,cover,content,createdAt,author}) {
     return(
         <div className='post'>
         <div className='image'>
@@ -8,8 +8,8 @@ export default function Post({title,summary,cover,content,createdAt}) {
         <div className='text'>
           <h2>{title}</h2>
           <p className='info'>
-            <span className='author'> Austin James</span>
-            <time>{formatISO9075(new Date(createdAt))}</time>
+            <span className='author'>{author.username}</span>
+            <time>{formatISO9075(new Date(createdAt),)}</time>
           </p>
           <p className='summary'>{summary}</p>
         </div>
