@@ -8,11 +8,17 @@ const app = express()
 const jwt = require('jsonwebtoken')
 const cookieParser = require('cookie-parser')
 const multer = require('multer') // used to upload files
-const uploadMiddleware = multer({ dest: 'uploads/ '})
+const uploadMiddleware = multer({ dest: '/tmp'})
+const {S3Client, PutObjectCommand} = require('@aws-sdk/client-s3')
 const fs = require('fs') //filesytem access 
+const mime = require('mime-types')
+
+require('dotenv').config
+
 
 const salt = bcrypt.genSaltSync(10)//needed to make bcrypt work
 const secret = "hdfhsdhfjasdhjfsdahfsdhdf"
+const bucket = 'austin-news-app'
 
 app.use(cors({credentials:true, origin:'http://localhost:3000'}))
 app.use(express.json())
@@ -20,6 +26,32 @@ app.use(cookieParser())
 app.use('/uploads', express.static(__dirname + '/uploads'))
 
 mongoose.connect('mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority')
+
+async function uploadToS3(path, originalFilename, mimetype) {
+    const client = new S3Client({
+        region: 'us-east-1',
+        credentials: {
+            accessKeyId: 'AKIAURGQVFT7ZRYWSEAH',//process.env.S3AK,
+            secretAccessKey: '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', //process.env.S3Secret,
+        },
+    })
+    const parts = originalFilename.split('.')
+    const ext = parts[parts.length -1]
+    const newFilename = Date.now() + '.' + ext 
+    //const data = 
+    await client.send(new PutObjectCommand({
+        Bucket: bucket,
+        Body: fs.readFileSync(path),
+        Key: newFilename,
+        ContentType: mimetype,
+        ACL: 'public-read',
+    }))
+    return `http://${bucket}.s3.amazonaws.com/${newFilename}`
+    //console.log({data})
+   //console.log({path, mimetype, ext, newFilename})
+}
+
+
 
 app.post('/register', async (req,res) => {
     const {username,password} = req.body
@@ -67,8 +99,13 @@ app.post('/logout', (req,res) => {
     })
 })
 //endpoint for file uploads, code for renaming files
-app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
-    const {originalname,path} = req.file
+app.post('/post',uploadMiddleware.single('file'), 
+    async (req,res) => {
+    const uploadedFiles = []   
+    const {originalname,path,mimetype} = req.file
+    const url = await uploadToS3(path, originalname, mimetype)
+    uploadedFiles.push(url)
+    //res.json(uploadedFiles)
     const parts = originalname.split('.')
     const ext = parts[parts.length - 1]
     const newPath = path+'.'+ext
@@ -86,8 +123,8 @@ app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
             author:info.id,
     
         })
-        res.json({postDoc})
-    })
+        res.json({postDoc, uploadedFiles})
+      })
 
  
 
