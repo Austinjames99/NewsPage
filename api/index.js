@@ -8,7 +8,7 @@ const app = express()
 const jwt = require('jsonwebtoken')
 const cookieParser = require('cookie-parser')
 const multer = require('multer') // used to upload files
-const uploadMiddleware = multer({ dest: 'models/uploads '})
+const uploadMiddleware = multer({ dest: 'uploads/ '})
 const fs = require('fs') //filesytem access 
 
 const salt = bcrypt.genSaltSync(10)//needed to make bcrypt work
@@ -17,6 +17,7 @@ const secret = "hdfhsdhfjasdhjfsdahfsdhdf"
 app.use(cors({credentials:true, origin:'http://localhost:3000'}))
 app.use(express.json())
 app.use(cookieParser())
+app.use('/uploads', express.static(__dirname + '/uploads'))
 
 mongoose.connect('mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority')
 
@@ -98,7 +99,7 @@ app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
 })
 
 app.get('/post', async (req,res) =>{
-    res.json(await Post.find().populate('author', ['username']))
+    res.json(await Post.find().populate('author', ['username']).sort({createdAt: -1}).limit(20))
 })
 app.listen(4000)
 
