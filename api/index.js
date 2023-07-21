@@ -150,7 +150,8 @@ app.get('/post/:id', async (req, res) => {
     const postDoc = await Post.findById(id).populate('author', ['username'])
     res.json(postDoc)
 })
-app.listen(4000)
+//app.listen(4000)
+module.exports = app
 
 //eM9QFIHWyEz2Wrtu --- mongo password - delete later - aj
 //mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority ---delete later -- aj
