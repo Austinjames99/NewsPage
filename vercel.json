@@ -1,5 +1,5 @@
 {
-    "buildCommand": "npm install && ./node_modules/vite/bin/vite.js build",
+    "buildCommand": "cd src && npm install && ./node_modules/vite/bin/vite.js build",
     "outputDirectory": "src/dist",
     "framework": "vite",
     "rewrites": [
