@@ -25,7 +25,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use('/uploads', express.static(__dirname + '/uploads'))
 
-mongoose.connect('mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority')
+//mongoose.connect('mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority')
 
 async function uploadToS3(path, originalFilename, mimetype) {
     const client = new S3Client({
@@ -54,6 +54,7 @@ async function uploadToS3(path, originalFilename, mimetype) {
 
 
 app.post('/register', async (req,res) => {
+    mongoose.connect('mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority')
     const {username,password} = req.body
     try{
         const userDoc = await User.create({
@@ -69,6 +70,7 @@ app.post('/register', async (req,res) => {
 })
 
 app.post('/login', async (req, res) => {
+    mongoose.connect('mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority')
     const {username, password} = req.body
     const userDoc = await User.findOne({username}) // grabs username
     const passOk = bcrypt.compareSync(password, userDoc.password) //check encrypted password
@@ -85,6 +87,7 @@ app.post('/login', async (req, res) => {
 
  //endpoint for profile (checking if logged in)
 app.get('/profile', (req,res) => { 
+    mongoose.connect('mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority')
     const {token} = req.cookies
     jwt.verify(token, secret, {}, (err,info) => {
         if (err) throw err
@@ -101,6 +104,7 @@ app.post('/logout', (req,res) => {
 //endpoint for file uploads, code for renaming files
 app.post('/post',uploadMiddleware.single('file'), 
     async (req,res) => {
+        mongoose.connect('mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority')
     const uploadedFiles = []   
     const {originalname,path,mimetype} = req.file
     const url = await uploadToS3(path, originalname, mimetype)
