@@ -1,5 +1,5 @@
 {
-    "buildCommand": "next build",
+    "buildCommand": "npm install && ./node_modules/vite/bin/vite.js build",
     "outputDirectory": "src/dist",
     "framework": "vite",
     "rewrites": [
