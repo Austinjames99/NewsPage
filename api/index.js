@@ -104,7 +104,6 @@ app.post('/logout', (req,res) => {
 //endpoint for file uploads, code for renaming files
 app.post('/post',uploadMiddleware.single('file'), 
     async (req,res) => {
-        mongoose.connect('mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority')
     const uploadedFiles = []   
     const {originalname,path,mimetype} = req.file
     const url = await uploadToS3(path, originalname, mimetype)
@@ -150,6 +149,7 @@ app.get('/post/:id', async (req, res) => {
     res.json(postDoc)
 })
 app.listen(4000)
+module.exports = app
 
 //eM9QFIHWyEz2Wrtu --- mongo password - delete later - aj
 //mongodb+srv://newsapp:eM9QFIHWyEz2Wrtu@cluster0.e8evabe.mongodb.net/?retryWrites=true&w=majority ---delete later -- aj
