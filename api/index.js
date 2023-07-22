@@ -13,7 +13,7 @@ const {S3Client, PutObjectCommand} = require('@aws-sdk/client-s3')
 const fs = require('fs') //filesytem access 
 const mime = require('mime-types')
 
-require('dotenv').config
+//require('dotenv').config
 
 
 const salt = bcrypt.genSaltSync(10)//needed to make bcrypt work
